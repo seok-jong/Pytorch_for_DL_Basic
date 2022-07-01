@@ -27,4 +27,42 @@ H(x) = x 로 하여 모델을 학습시키는 것 보다 H(x) = F(x) + x로 하�
 
 ## Deep Residual Learning
 
-이 논문에서 적극도입한 skip connection방식은
+![fig3](fig/fig3.png)  
+이 논문에서 적극도입한 skip connection방식은 위 식과 같이 계산된다.
+F(x)는 Conv연산과 같은 의미하며 이 결과에 비선형함수(ReLU)가 계산된다.
+
+각 블럭의 두 번째 비선형함수는 x(identity mapping)가 더해진 이후에 계산된다.
+
+이미 identity mapping을 통한 skip connection의 성능을 검증했으므로 skip connection에 추가적인 연산은 하지 않는다.(차원이 안맞으면 단순 conv연산(+ReLU)진행함)
+이로써 plain모델과의 성능면, 컴퓨팅 파워면에서 월등한 우위를 가져올 수 있다.
+단, 논문에서 각 블럭을 계산할 때, 비선형성질이 더해지지 않으면 이 구조에 대한 효과는 없다고 말한다.
+
+## Network Architecture
+
+![fig4](fig/fig4.png)
+
+ResNet의 구조는 위 이미지와 같으며 구체적인 구조는 아래와 같다.
+
+1. Plain Network
+
+- 각각의 conv연산의 결과는 동일해야한다.
+- 만약 feature map의 크기가 반감된다면 channel을 두 배로 늘려 시간복잡도를 유지한다.
+
+Plain model은 위 두 개의 규칙에 의해 만들어 졌다.
+
+2. Residual Network
+
+Residual network는 plain 모델에 skip connection을 추가하면 된다.
+이때 주의할 사항은 identity mapping도중 차원이 달라질 때인데  
+이때는 2 가지 옵션이 있다.
+
+1. 늘어난 차원방향으로 0을 채워 더한다.
+2. 1x1 conv연산(stride - 2) 를 사용하여 채널을 2배 늘리고 Feature map의 크기를 반감시킨다.
+
+각각의 conv연산 이후에 그리고 activation Function이전에 Batch Nomalization연산을 수행한다.
+
+## Experiments
+
+위와 같은 구조로 layer의 갯수별로 총 5개의 모델이 만들어 졌으며 아래 이미지와 같다.
+
+![architectures](fig/architectures.png)
